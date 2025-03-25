@@ -12,8 +12,32 @@ class JoyToCmdVelNode(Node):
         self.subscription = self.create_subscription(Joy, 'joy', self.joy_callback, 10)
         # Publisher for the 'omnibot/cmd_vel' topic
         self.publisher_ = self.create_publisher(TwistStamped, 'omnibot/cmd_vel', 10)
-    
+        # To record the initial joystick state
+        self.initial_axes = None
+        # Flag to indicate the startup phase (deadzone applies only during startup)
+        self.startup = True
+        # Threshold for detecting a change in the joystick's position
+        self.deadzone_threshold = 0.05
+
     def joy_callback(self, msg: Joy):
+        # On the very first message, record the baseline and do not publish.
+        if self.initial_axes is None:
+            self.initial_axes = list(msg.axes)
+            self.get_logger().info("Initial joystick state recorded; waiting for movement.")
+            return
+
+        # During startup, only publish when movement exceeds the threshold.
+        if self.startup:
+            movement_detected = any(
+                abs(current - base) > self.deadzone_threshold
+                for current, base in zip(msg.axes, self.initial_axes)
+            )
+            if not movement_detected:
+                return  # Still within the startup deadzone, so do nothing.
+            else:
+                self.startup = False  # Movement detected; exit the startup phase.
+
+        # Prepare the TwistStamped message.
         twist_msg = TwistStamped()
         twist_msg.header.stamp = self.get_clock().now().to_msg()
         twist_msg.header.frame_id = "base_link"  # Adjust frame_id if necessary
