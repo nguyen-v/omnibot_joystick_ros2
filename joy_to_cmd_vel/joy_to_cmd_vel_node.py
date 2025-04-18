@@ -51,9 +51,11 @@ class JoyToCmdVelNode(Node):
             # If the axis value has changed relative to the recorded baseline, update the scale.
             elif msg.axes[2] != self.axis3_baseline:
                 # Map axis 2 value from [-1, 1] to a scaling factor in [0.3, 1.0].
-                self.max_linear_scale = ((msg.axes[2] + 1) / 2) * 0.7 + 0.3
+                self.max_linear_scale = ((msg.axes[2] + 0.15) / ) * 0.7 + 0.3
                 # Update the baseline to the new value to detect further changes.
                 self.axis3_baseline = msg.axes[2]
+            elif msg.buttons[7] == 1:
+                self.max_linear_scale = 0.3
         else:
             # Reset the baseline when button 0 is not pressed.
             self.axis3_baseline = None
