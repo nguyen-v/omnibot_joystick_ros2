@@ -54,8 +54,8 @@ class JoyToCmdVelNode(Node):
                 self.max_linear_scale = ((msg.axes[2] + 0.15) / ) * 0.7 + 0.3
                 # Update the baseline to the new value to detect further changes.
                 self.axis3_baseline = msg.axes[2]
-            elif msg.buttons[7] == 1:
-                self.max_linear_scale = 0.3
+        elif msg.buttons[7] == 1:
+            self.max_linear_scale = 0.3
         else:
             # Reset the baseline when button 0 is not pressed.
             self.axis3_baseline = None
