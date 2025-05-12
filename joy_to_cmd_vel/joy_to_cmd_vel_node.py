@@ -62,7 +62,7 @@ class JoyToCmdVelNode(Node):
 
         # Prepare the TwistStamped message.
         twist_msg = TwistStamped()
-        twist_msg.header.stamp = self.get_clock().now().to_msg()
+        # twist_msg.header.stamp = self.get_clock().now().to_msg()
         twist_msg.header.frame_id = "base_link"  # Adjust frame_id if necessary
 
         # Map linear velocities and apply the current scaling factor.
